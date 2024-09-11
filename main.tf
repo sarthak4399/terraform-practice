@@ -1,9 +1,16 @@
-resource "local_file" "example" {
-  content  = "Hello,there we are learning Terraform Today !"
-  filename = "${path.module}/terraform_demo.txt"
-
+provider "docker" {
+  host = "unix:///var/run/docker.sock"
 }
 
-output "file_path" {
-  value = local_file.example.filename
+resource "docker_image" "nginx-img" {
+    name = "nginx:latest"
+    keep_locally = false
+}
+resource "docker_container" "nginx-container" {
+    image = docker_image.nginx-img.name
+    name  = "nginx-container"
+    ports {
+        internal = 80
+        external = 8080
+    }
 }
